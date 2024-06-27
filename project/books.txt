@@ -1,0 +1,21 @@
+Hamlet,William Shakespeare,20,5
+Richard II,William Shakespeare,23,6
+As You Like It,William Shakespeare,22,4
+King Lear,William Shakespeare,21,7
+The Tempest,William Shakespeare,25,5
+Ulysses,James Joyce,30,3
+Finn's Hotel,James Joyce,24,7
+Dubliners,James Joyce,23,5
+Finnegans Wake,James Joyce,31,5
+Chamber Music,James Joyce,25,8
+Stephen Hero,James Joyce,20,9
+Tomb of Sand,Geetanjali Shree’s,24,4
+Between Two Worlds,Geetanjali Shree’s,29,4
+War and Peace,Leo Tolstoy,22,6
+The Great Gatsby,F. Scott Fitzgerald,23,6
+Don Quixote,Miguel de Cervantes,20,5
+Hear Yourself,Prem Rawat,31,2
+Lal Salam,Smriti Irani,27,4
+Queen of Fire,Devika Rangachari,22,3
+When Breath Becomes Air,Paul Kalanithi,20,5
+complex analysis,reda abdo,30,4
