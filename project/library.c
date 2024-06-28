@@ -62,7 +62,7 @@ void loadUsers()
     createlist(&users);
 
     listentry e;
-    while (fscanf(file,"%d,%49[^,],%49[^\n]\n",&e.user.id,e.user.username,e.user.pass)!=EOF)
+    while (fscanf(file,"%d,%49[^,],%49[^,],%d\n",&e.user.id,e.user.username,e.user.pass,&e.user.nbor)!=EOF)
 	{
         insertlist(listsize(users),e,users);
     }
@@ -83,7 +83,7 @@ void saveUsers()
     for (int i=0;i<listsize(users);i++)
 	{
         retrievelist(i,&e,users);
-        fprintf(file,"%d,%s,%s\n",e.user.id,e.user.username,e.user.pass);
+        fprintf(file,"%d,%s,%s,%d\n",e.user.id,e.user.username,e.user.pass,e.user.nbor);
     }
 
     fclose(file);

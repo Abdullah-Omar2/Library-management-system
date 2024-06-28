@@ -4,12 +4,12 @@
 
 void viewUserData(char username[]);
 void changePassword(char username[]);
-void viewAllBooks();
+void viewBooks();
 void searchBook();
-void requestBorrow();
+void requestBorrow(char username[]);
 void buyBook();
 void requestNewBook();
-void viewBorrowRequests();
+void viewBorrowRequests(char username[]);
 
 int userMode()
 {
@@ -47,13 +47,13 @@ int userMode()
                 changePassword(username);
                 return a;
             case 3:
-                viewAllBooks();
+                viewBooks();
                 return a;
             case 4:
                 searchBook();
                 return a;
             case 5:
-                requestBorrow();
+                requestBorrow(username);
                 return a;
             case 6:
                 buyBook();
@@ -62,7 +62,7 @@ int userMode()
                 requestNewBook();
                 return a;
             case 8:
-                viewBorrowRequests();
+                viewBorrowRequests(username);
                 return a;
             case 9:
                 printf("Logging out...\n");
@@ -138,113 +138,69 @@ void changePassword(char username[])
     printf("User not found or incorrect password.\n");
 }
 
-void viewAllBooks()
-{
-    printf("Books:\n");
-    for (int i=0;i<listsize(books);i++)
-	{
-        listentry e;
-        retrievelist(i,&e,books);
-        printf("Title: %s\nAuthor: %s\nnumber: %d\nPrice: %d\n-------------------------------------------------\n",e.book.name,e.book.author,e.book.number,e.book.price);
-    }
-}
-
-/*void searchBook()
-{
-    int c;
-	char name[50];
-	char author[50];
-	printf ("1. search by name\n2.search by author");
-	scanf("%d",&c);
-	
-	switch(c)
-	{
-		case 1:
-			printf("Enter Book name to search: ");
-			scanf("%s",name);
-
-			for (int i=0;i<listsize(books);i++)
-			{
-				listentry e;
-				retrievelist(i,&e,books);
-				if (strcmp(e.book.name,name)==0)
-				{
-					printf("Name: %s, Author: %s, ID: %d, Number: %d, Price: %.d\n",e.book.name,e.book.author,e.book.number,e.book.price);
-					return;
-				}
-			}
-			
-			printf("Book not found.\n");
-			break;
-		case 2:
-			printf("Enter Book author to search: ");
-			scanf("%s",author);
-			
-			 int authorFound=0;
-
-			for (int i=0;i<listsize(books);i++)
-			{
-				listentry e;
-				retrievelist(i,&e,books);
-				if (strcmp(e.book.author,author)==0)
-				{
-					printf("Name: %s, Author: %s, ID: %d, Number: %d, Price: %.d$\n-------------------\n",e.book.name,e.book.author,e.book.number,e.book.price);
-				    authorFound=1;
-				}
-			}
-			
-			if (!authorFound)
-			{
-				printf("Author not found.\n");
-			}
-			break;
-		default:
-			printf("Invalid number selected.\n");
-            break;
-	}
-}*/
-
 void requestBorrow(char username[])
 {
-	int a=0;
-	char name[50];
-	listentry x;
-	BorrowRequest BR;
-	getchar();
-	printf ("Enter Book name to borrow: ");
-	gets(name);
-	
-	for (int i=0;i<listsize(books);i++)
-	{
-		listentry e;
-		retrievelist(i,&e,books);
-		if (strcmp(e.book.name,name)==0)
-		{
-			BR.book=e.book;
-			a=1;
-			break;
-		}
-	}
-			
-	if (!a)
-	{
-		printf("Book not found.\n");
-		return;
-	}
-	
-	for (int i=0;i<listsize(users);i++)
-	{
-		listentry e;
-		retrievelist(i,&e,users);
-		if (strcmp(e.user.username,username)==0)
-		{
-			BR.user=e.user;
-			break;
-		}
-	}
-	BR.status=0;
-	x.BR=BR;
-	insertlist (listsize(BRs),x,BRs);
+	char bookName[50];
+    printf("Enter the book name you want to borrow: ");
+    getchar(); // Clear the newline character
+    gets(bookName);
+
+    // Find the user
+    User *user = NULL;
+    for (int i = 0; i < listsize(users); i++) {
+        listentry e;
+        retrievelist(i, &e, users);
+        if (strcmp(e.user.username, username) == 0) {
+            user = &e.user;
+            break;
+        }
+    }
+
+    if (user == NULL) {
+        printf("User not found.\n");
+        return;
+    }
+
+    // Check if the user has already borrowed 2 books
+    if (user->nbor >= 2) {
+        printf("You cannot borrow more than 2 books.\n");
+        return;
+    }
+
+    // Find the book
+    Book *book = NULL;
+    for (int i = 0; i < listsize(books); i++) {
+        listentry e;
+        retrievelist(i, &e, books);
+        if (strcmp(e.book.name, bookName) == 0) {
+            book = &e.book;
+            break;
+        }
+    }
+
+    if (book == NULL) {
+        printf("Book not found.\n");
+        return;
+    }
+
+    // Check if the book is available
+    if (book->number <= 0) {
+        printf("This book is currently not available.\n");
+        return;
+    }
+
+    // Create a new borrow request
+    BorrowRequest newRequest;
+    newRequest.user = *user;
+    newRequest.book = *book;
+    newRequest.status = 0; // Status: waiting
+
+    // Add the new request to the borrow requests list
+    listentry e;
+    e.BR = newRequest;
+    insertlist(listsize(BRs), e, BRs);
+
+    printf("Your borrow request has been submitted.\n");
 }
 
 void buyBook()
@@ -262,7 +218,7 @@ void buyBook()
 		if (strcmp(e.book.name,name)==0)
 		{
 			printf("The Book price: %d\n",e.book.price);
-			printf("Buying succeeded",e.book.price);
+			printf("Buying succeeded");
             e.book.number--;
 			saveBooks();
 			a=1;
@@ -307,7 +263,7 @@ void viewBorrowRequests(char username[])
 		retrievelist(i,&e,BRs);
 		if (strcmp(e.BR.user.username,username)==0)
 		{
-			printf("Request information:\n1. Book: %s\n2. status: %s\n--------------------------------\n",e.BR.book.name,e.BR.status?(e.BR.status==1?"approved":"denied"):"waiting");
+			printf("Request information:\n1. Book: %s\n2. status: %s\n--------------------------------\n",e.BR.book.name,(e.BR.status?(e.BR.status==1?"approved":"denied"):"waiting"));
 		}
 	}
 }

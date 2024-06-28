@@ -5,16 +5,15 @@
 void addAdmin();
 void removeAdmin();
 void setAdminPermissions();
-
 void viewUsers();
 void viewBooks();
 void ownerAddBook();
 void ownerRemoveBook();
-void addUser();
-void removeUser();
+void ownerAddUser();
+void ownerRemoveUser();
 void editUserId();
 void searchBook();
-void makeReservation();
+void ownerMakeReservation();
 
 int ownerMode()
 {
@@ -29,7 +28,7 @@ int ownerMode()
 	{
         int choice;
         printf("Welcome Owner\n");
-        printf("1. Add Admin\n2. Remove Admin\n3. Set Admin Permissions\n4. View Users\n5. View Books\n6. Add Book\n7. Remove Book\n8. Add User\n9. removeUser\n10. Make Reservation\n11. Return Reserved Book\n12. Logout\n");
+        printf("1. Add Admin\n2. Remove Admin\n3. Set Admin Permissions\n4. View Users\n5. View Books\n6. Add Book\n7. Remove Book\n8. Add User\n9. removeUser\n10. Make Reservation\n11. Logout\n");
         scanf("%d",&choice);
 
         switch (choice)
@@ -56,18 +55,15 @@ int ownerMode()
                 ownerRemoveBook();
                 return a;
             case 8:
-                addUser();
+                ownerAddUser();
                 return a;
             case 9:
-                removeUser();
+                ownerRemoveUser();
                 return a;
 			case 10:
-                makeReservation();
+                ownerMakeReservation();
                 return a;
-            /* case 11:
-                returnReservedBook();
-                return a; */
-            case 12:
+            case 11:
                 printf("Logging out...\n");
                 a=1;
 				return a;
@@ -101,7 +97,8 @@ void addAdmin()
     insertlist(listsize(admins),e,admins);
 
     saveAdmins();
-    printf("Admin added successfully.\n");}
+    printf("Admin added successfully.\n");
+}
 
 void removeAdmin()
 {
@@ -210,87 +207,7 @@ void ownerRemoveBook()
     printf("Book not found.\n");
 }
 
-/*void viewUsers()
-{
-    printf("Users:\n");
-    for (int i=0;i<listsize(users);i++)
-	{
-        listentry e;
-        retrievelist(i,&e,users);
-        printf("Username: %s\nID: %d\nPassword: %s\nNumber of Borrowed Books: %d\n",e.user.username,e.user.id, e.user.pass,e.user.nbor);
-        printf("Borrowed Books:\n");
-        for (int j=0;j<e.user.nbor;j++)
-		{
-            printf("  Book %d: %s    Author: %s\n",j+1,e.user.borbk[j].name,e.user.borbk[j].author);
-        }
-    }
-}
-
-void viewBooks()
-{
-    printf("Books:\n");
-    for (int i=0;i<listsize(books);i++)
-	{
-        listentry e;
-        retrievelist(i,&e,books);
-        printf("Title: %s\nAuthor: %s\nnumber: %d\nPrice: %d$\n-------------------------------------------------\n",e.book.name,e.book.author,e.book.number,e.book.price);
-    }
-}
-
-void addBook()
-{
-    Book newBook;
-    printf("Enter Book name: ");
-    scanf("%s",newBook.name);
-    printf("Enter Book author: ");
-    scanf("%s",newBook.author);
-    printf("Enter Book number: ");
-    scanf("%d",&newBook.number);
-    printf("Enter Book price: ");
-    scanf("%d",&newBook.price);
-	
-	for (int i=0;i<listsize(books);i++)
-	{
-		listentry e;
-        retrievelist(i,&e,books);
-		if (strcmp(e.book.name,newBook.name)==0)
-		{
-			printf ("Book is already in library.\n");
-			return;
-		}
-    }
-	
-	listentry e;
-    e.book=newBook;
-    insertlist(listsize(books),e,books);
-
-    saveBooks();
-    printf("Book added successfully.\n");
-}
-
-void removeBook()
-{
-    char bookName[50];
-    printf("Enter Book Name to remove: ");
-    scanf("%s",bookName);
-
-    for (int i=0;i<listsize(books);i++)
-	{
-        listentry e;
-        retrievelist(i,&e,books);
-        if (strcmp(e.book.name,bookName)==0)
-		{
-            deletlist(i,&e,books);
-            saveBooks();
-            printf("Book removed successfully.\n");
-            return;
-        }
-    }
-
-    printf("Book not found.\n");
-}
-
-void addUser()
+void ownerAddUser()
 {
     User newUser;
     printf("Enter User username: ");
@@ -308,7 +225,8 @@ void addUser()
         if (strcmp(e.user.username,newUser.username)==0||strcmp(e.user.pass,newUser.pass)==0||e.user.id==newUser.id)
 		{
             printf("Username or ID or Passward is already used try again.\n");
-            addUser();
+            ownerAddUser();
+			return;
         }
     }
 
@@ -320,7 +238,7 @@ void addUser()
     printf("User added successfully.\n");
 }
 
-void removeUser()
+void ownerRemoveUser()
 {
     int userID;
     printf("Enter User ID to remove: ");
@@ -342,12 +260,77 @@ void removeUser()
     printf("User not found.\n");
 }
 
-void makeReservation()
+void ownerMakeReservation()
 {
-    
-}
+	if (listsize(BRs)==0)
+	{
+        printf("No borrow requests.\n");
+        return;
+    }
+	
+	listentry e;
+	int c;
+    printf("Borrow Requests:\n");
+    for (int i=0;i<listsize(BRs);i++)
+	{
+        listentry e;
+        retrievelist(i,&e,BRs);
+        printf("Request %d:\n",i+1);
+        printf("  User ID: %d\n",e.BR.user.id);
+        printf("  Book Name: %s\n",e.BR.book.name);
+        printf("  Book Author: %s\n",e.BR.book.author);
+        printf("  User's number of borrowed books: %d\n",e.BR.user.nbor);
+        printf("--------------------------------------\n");
+    }
+	
+	int requestNumber;
+	printf ("Enter namber of request you want to take action: ");
+	scanf ("%d",&requestNumber);
+	
+	if (requestNumber<1||requestNumber>listsize(BRs))
+	{
+        printf("Invalid request number.\n");
+        return;
+    }
+	
+	retrievelist(requestNumber-1,&e,BRs);
+	if (e.BR.status!=0)
+	{
+        printf("This request has already been handled.\n");
+        return;
+    }
+	
+	printf ("Enter 1 to accept or 2 to deny: ");
+	scanf ("%d",&c);
+	
+	if (c==1)
+	{
+        if (e.BR.user.nbor<2)
+		{
+            e.BR.user.borbk[e.BR.user.nbor]=e.BR.book;
+            e.BR.user.nbor++;
+            e.BR.book.number--;
+            e.BR.status=1;
+			printf("Request accepted.\n");
+        }
+		else
+		{
+            printf("User is already borrowing two books, you can't accept.\n");
+            return;
+        }
+    }
+	else if (c==2)
+	{
+        e.BR.status=-1;
+        printf("Request denied.\n");		
+    }
+	else
+	{
+        printf("Invalid action.\n");
+        return;
+    }
 
-void returnReservedBook()
-{
-    
-}*/
+    replacelist(requestNumber-1,e,BRs);
+	saveBooks();
+    saveUsers();
+}

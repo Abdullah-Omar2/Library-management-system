@@ -6,12 +6,11 @@ void viewUsers();
 void viewBooks();
 void adminAddBook();
 void adminRemoveBook();
-void addUser();
-void removeUser();
+void adminAddUser();
+void adminRemoveUser();
 void editUserId();
 void searchBook();
-void makeReservation();
-//void returnReservedBook();
+void adminMakeReservation();
 
 int adminMode()
 {
@@ -38,7 +37,7 @@ int adminMode()
 	{
         int choice;
         printf("Welcome Admin\n");
-        printf("1. View Users\n2. View Books\n3. Add Book\n4. Remove Book\n5. Add User\n6. Remove User\n7. Edit User ID\n8. Search Book\n9. Make Reservation\n10. Return Reserved Book\n11. Logout\n");
+        printf("1. View Users\n2. View Books\n3. Add Book\n4. Remove Book\n5. Add User\n6. Remove User\n7. Edit User ID\n8. Search Book\n9. Make Reservation\n10. Logout\n");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -55,10 +54,10 @@ int adminMode()
                 adminRemoveBook();
                 return a;
             case 5:
-                addUser();
+                adminAddUser();
                 return a;
             case 6:
-                removeUser();
+                adminRemoveUser();
                 return a;
             case 7:
                 editUserId();
@@ -67,12 +66,9 @@ int adminMode()
                 searchBook();
                 return a;
             case 9:
-                makeReservation();
+                adminMakeReservation();
                 return a;
-            /* case 10:
-                returnReservedBook();
-                return a; */
-            case 11:
+            case 10:
                 printf("Logging out...\n");
 				a=1;
                 return a;
@@ -171,7 +167,7 @@ void adminRemoveBook()
     printf("Book not found.\n");
 }
 
-void addUser()
+void adminAddUser()
 {
     User newUser;
     printf("Enter User username: ");
@@ -189,7 +185,7 @@ void addUser()
         if (strcmp(e.user.username,newUser.username)==0||strcmp(e.user.pass,newUser.pass)==0||e.user.id==newUser.id)
 		{
             printf("Username or ID or Passward is already used try again.\n");
-            addUser();
+            adminAddUser();
         }
     }
 
@@ -201,7 +197,7 @@ void addUser()
     printf("User added successfully.\n");
 }
 
-void removeUser()
+void adminRemoveUser()
 {
     int userID;
     printf("Enter User ID to remove: ");
@@ -316,7 +312,7 @@ void searchBook()
 	}
 }
 
-void makeReservation()
+void adminMakeReservation()
 {
     printf("Borrow Requests:\n");
     for (int i=0;i<listsize(BRs);i++)
@@ -328,9 +324,12 @@ void makeReservation()
         printf("  Book Name: %s\n",e.BR.book.name);
         printf("  Book Author: %s\n",e.BR.book.author);
     }
+	
+	listentry e;
+	int c;
+	printf ("Enter namber of request you want to take action: ");
+	scanf ("%d",&c);
+	retrievelist(c-1,&e,BRs);
+	printf ("Enter 1 to accept or 2 to deny: ");
+	scanf ("%d",&e.BR.status);
 }
-
-/*void returnReservedBook()
-{
-    
-}*/
