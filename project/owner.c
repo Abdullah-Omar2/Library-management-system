@@ -135,9 +135,9 @@ void setAdminPermissions()
         if (strcmp(e.admin.adminname,adminname)==0)
 		{
             printf("Enter permissions (1 for yes, 0 for no):\n");
-            printf("1. Add/Remove Member: ");
+            printf("1. Add/Remove book: ");
             scanf("%d",&e.admin.permissions[0]);
-            printf("2. Add/Remove Book: ");
+            printf("2. Add/Remove user: ");
             scanf("%d",&e.admin.permissions[1]);
             printf("3. Make Reservation: ");
             scanf("%d",&e.admin.permissions[2]);
@@ -217,6 +217,8 @@ void ownerAddUser()
     printf("Enter User password: ");
     scanf("%s",newUser.pass);
     newUser.nbor=0;
+	strcpy(newUser.borbk[0],"None");
+	strcpy(newUser.borbk[1],"None");
 	
 	for (int i=0;i<listsize(users);i++)
 	{
@@ -268,20 +270,17 @@ void ownerMakeReservation()
         return;
     }
 	
-	listentry e;
-	int c;
     printf("Borrow Requests:\n");
     for (int i=0;i<listsize(BRs);i++)
 	{
         listentry e;
         retrievelist(i,&e,BRs);
         printf("Request %d:\n",i+1);
-        printf("  User ID: %d\n",e.BR.user.id);
-        printf("  Book Name: %s\n",e.BR.book.name);
-        printf("  Book Author: %s\n",e.BR.book.author);
-        printf("  User's number of borrowed books: %d\n",e.BR.user.nbor);
+        printf("  User name: %s\n",e.BR.username);
+        printf("  Book name: %s\n",e.BR.bookname);
         printf("--------------------------------------\n");
     }
+	listentry br,u,bo;
 	
 	int requestNumber;
 	printf ("Enter namber of request you want to take action: ");
@@ -293,35 +292,62 @@ void ownerMakeReservation()
         return;
     }
 	
-	retrievelist(requestNumber-1,&e,BRs);
-	if (e.BR.status!=0)
+	retrievelist(requestNumber-1,&br,BRs);
+	if (br.BR.status!=0)
 	{
         printf("This request has already been handled.\n");
         return;
     }
 	
+	int pu;
+	for (pu=0;pu<listsize(users);pu++)
+	{
+        retrievelist(pu,&u,users);
+        if (strcmp(u.user.username,br.BR.username)==0)
+		{
+            break;
+        }
+    }
+	
+	if (u.user.nbor>=2)
+	{
+        printf("User is already borrowing two books.\n");
+        return;
+    }
+	
+	int pb;
+	for (pb=0;pb<listsize(books);pb++)
+			{
+				retrievelist(pb,&bo,books);
+				if (strcmp(bo.book.name,br.BR.bookname)==0)
+				{
+					break;
+				}
+			}
+	
+	int c;
 	printf ("Enter 1 to accept or 2 to deny: ");
 	scanf ("%d",&c);
 	
 	if (c==1)
 	{
-        if (e.BR.user.nbor<2)
-		{
-            e.BR.user.borbk[e.BR.user.nbor]=e.BR.book;
-            e.BR.user.nbor++;
-            e.BR.book.number--;
-            e.BR.status=1;
-			printf("Request accepted.\n");
-        }
-		else
-		{
-            printf("User is already borrowing two books, you can't accept.\n");
-            return;
-        }
+		strcpy(u.user.borbk[u.user.nbor],br.BR.bookname);
+        u.user.nbor++;
+        bo.book.number--;
+        br.BR.status=1;
+		replacelist(pu,u,users);
+		replacelist(pb,bo,books);
+		replacelist(requestNumber-1,br,BRs);
+		saveUsers();
+		saveBooks();
+		saveBorrowRequests();
+		printf("Request accepted.\n");
     }
 	else if (c==2)
 	{
-        e.BR.status=-1;
+        br.BR.status=-1;
+		replacelist(requestNumber-1,br,BRs);
+		saveBorrowRequests();
         printf("Request denied.\n");		
     }
 	else
@@ -329,8 +355,4 @@ void ownerMakeReservation()
         printf("Invalid action.\n");
         return;
     }
-
-    replacelist(requestNumber-1,e,BRs);
-	saveBooks();
-    saveUsers();
 }

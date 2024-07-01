@@ -14,7 +14,7 @@ typedef struct
     char username[50];
     int id;
     char pass[50];
-    Book borbk[2];
+    char borbk[2][50];
     int nbor;
 }User;
 
@@ -22,13 +22,13 @@ typedef struct
 {
     char adminname[50];
     char pass[50];
-    int permissions[3]; // 0: add/remove member, 1: add/remove book, 2: make reservation
+    int permissions[3]; // 0: add/remove book, 1: add/remove user, 2: make reservation
 }Admin;
 
 typedef struct
 {
-    User user;
-	Book book;
+    char username[50];
+	char bookname[50];
 	int status; //0: waiting, 1: approved, -1: denied
 }BorrowRequest;
 

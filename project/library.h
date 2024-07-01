@@ -16,6 +16,10 @@ void loadUsers();
 void saveUsers();
 void loadAdmins();
 void saveAdmins();
+void loadBorrowRequests();
+void saveBorrowRequests();
+void loadNewBookRequests();
+void saveNewBookRequests();
 void closeLibrary();
 
 #endif

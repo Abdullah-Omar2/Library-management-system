@@ -1,4 +1,4 @@
-Hamlet,William Shakespeare,20,5
+Hamlet,William Shakespeare,20,4
 Richard II,William Shakespeare,23,6
 As You Like It,William Shakespeare,22,4
 King Lear,William Shakespeare,21,7
@@ -17,5 +17,5 @@ Don Quixote,Miguel de Cervantes,20,5
 Hear Yourself,Prem Rawat,31,2
 Lal Salam,Smriti Irani,27,4
 Queen of Fire,Devika Rangachari,22,3
-When Breath Becomes Air,Paul Kalanithi,20,5
+When Breath Becomes Air,Paul Kalanithi,20,4
 complex analysis,reda abdo,30,4
